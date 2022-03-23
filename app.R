@@ -35,8 +35,8 @@ ui <- fluidPage(
       column(6,
              dateRangeInput("dateRange",
                             "Select a date range to display",
-                            start = Sys.Date() - 10,
-                            end = Sys.Date() + 10
+                            start = Sys.Date() - 60,
+                            end = Sys.Date() + 60
              ),
       ),
       
@@ -51,8 +51,9 @@ ui <- fluidPage(
   
   # Main panel for displaying outputs ----
   fluidRow(
-    textOutput("date"),
-    textOutput("date2"),
+    #textOutput("date"), #for testing
+    #textOutput("date2"), #for testing
+    textOutput("GanttError"),
     plotOutput("Gantt", width = "4000px", height = "2000px"),
     hr()
   )
@@ -99,16 +100,16 @@ server <- function(input, output, session) {
     df2$activity <- df2$checklistItems
     df2$wp <- df2$bucketName
     df2 <- df2 %>% as.data.frame() %>% drop_na(c(start_date, end_date))
-    df2 <- df2 %>% filter(between(start_date, input$dateRange[1], input$dateRange[2])) #This is agressive filtering
+    df2 <- df2 %>% filter(between(start_date, input$dateRange[1], input$dateRange[2])) #This is aggressive filtering
   })
   
-  output$contents2 <- renderDataTable(dfGantt())
+  # output$contents2 <- renderDataTable(dfGantt()) #for testing
   
   # Test date display output
-  output$date2 <- renderText(as.character(dfGantt()[[1,18]]))
-  output$date <- renderText(as.character(as.Date(input$dateRange[1], format = "%Y-%m-%d")))
+  # output$date2 <- renderText(as.character(dfGantt()[[1,18]])) #for testing
+  # output$date <- renderText(as.character(as.Date(input$dateRange[1], format = "%Y-%m-%d"))) #for testing
   
-  output$Gantt <- renderPlot(
+  Gantt <- reactive({
     ganttrify(
       project = dfGantt(),
       month_number_label = FALSE,
@@ -117,14 +118,15 @@ server <- function(input, output, session) {
       hide_wp = input$showWP
     )#+
     #ggplot2::coord_cartesian(xlim =c(as.Date(input$dateRange[1], format = "%Y-%m-%d"), as.Date(input$dateRange[1], format = "%Y-%m-%d")))
-    
-  )
+  })
+  
+  output$Gantt <- renderPlot(Gantt())
   
   observeEvent(input$buttonReset, {
     updateDateRangeInput(session,
                          "dateRange",
-                         start = Sys.Date() - 10,
-                         end = Sys.Date() + 10)
+                         start = Sys.Date() - 60,
+                         end = Sys.Date() + 60)
   })
   
 }
