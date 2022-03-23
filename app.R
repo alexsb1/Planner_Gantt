@@ -54,8 +54,23 @@ ui <- fluidPage(
     #textOutput("date"), #for testing
     #textOutput("date2"), #for testing
     textOutput("GanttError"),
-    plotOutput("Gantt", width = "4000px", height = "2000px"),
+    plotOutput("Gantt", width = "100%", height = "2000px"),
     hr()
+  ),
+  
+  # Footer
+  fluidRow(
+    column(6,
+           "Built by ",
+           tags$a(href="http://alexsb1.github.io/", target = "_blank", "Alex Searle-Barnes")
+    ),
+    column(6,
+           "Source code is ",
+           tags$a(href="https://github.com/alexsb1/Planner_Gantt", target = "_blank", "available on GitHub"),
+           
+    ),
+    hr(),
+    br()
   )
   
 )
